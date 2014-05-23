@@ -73,6 +73,7 @@ table {
 ul.posts {
   list-style-type: none;
   margin-bottom: 2em;
+  margin-top: 1em;
 }
 
   ul.posts li {
