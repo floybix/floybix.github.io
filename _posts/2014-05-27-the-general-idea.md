@@ -46,13 +46,12 @@ watch what goes wrong.
 HTM is based on a memory system, arranged in a hierarchy of increasing
 abstraction, where the memory is simultaneously a predictive function.
 So it can recognise things, or situations or whatever, and infer what
-is happening and what may happen next. There is no emotion, no
-desire, no fear. Just recognition, generalisation, analogy. This is
-not scary. Zombies are scary. Intelligence, in and of itself, is not.
-Of course every technology will be put to nasty uses, but I think it's
+is happening and what may happen next. There is no emotion, no desire,
+no fear. Just recognition, generalisation, analogy. Is that scary? Of
+course every technology will be put to nasty uses, but I think it's
 hard to argue that more intelligence is a bad thing.
 
-Right, well, looks like we've got a lot of work to do. Better get on
-with it.
+Anyway, looks like we've got a lot of work to do. Better get on with
+it.
 
 *--Felix*
