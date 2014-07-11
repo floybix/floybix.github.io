@@ -1,0 +1,87 @@
+
+body {
+  background:#ccc;
+}
+
+#header {
+
+}
+
+#viz {
+  float: left;
+  clear: left;
+  /* NB - set on load to 70% width in code */
+}
+
+#sidebar {
+  float: left;
+  width: 29%;
+}
+
+#viz-options fieldset {
+  float: left;
+  width: 40%;
+  font-size: 80%;
+}
+
+.slider-box {
+  display: inline-block;
+  vertical-align: middle;
+  width: 150px;
+  height: 1em;
+}
+
+.goog-slider-horizontal {
+  width: 100%;
+  height: 100%;
+  background-color: #eee;
+  border: 1px groove #eee;
+  position: relative;
+  overflow: hidden;
+}
+
+.goog-slider-horizontal
+.goog-slider-thumb {
+  top: 0;
+  width: 20px;
+  height: 100%;
+  position: absolute;
+  background-color: #bbb;
+  overflow: hidden;
+}
+
+#sidebar span {
+  margin-left: 5px;
+  margin-right: 5px;
+}
+
+#region-spec label {
+  display: block;
+}
+
+#region-spec .parameter-label {
+  display: inline-block;
+  width: 18em;
+  font-family: monospace;
+}
+
+#region-spec label input {
+  width: 6em;
+  font-family: monospace;
+  margin: 0px;
+}
+
+.detail {
+  font-size: 80%;
+  opacity: 0.8;
+}
+
+#sidebar a {
+  font-size: 80%;
+  text-decoration: none;
+}
+
+#detail-text {
+  width: 80ex;
+  height: 60ex;
+}
