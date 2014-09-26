@@ -101,8 +101,9 @@ lateral synapses.
 
 To test my mechanism, I made an input stream consisting of six fixed
 one-dimensional sequences, each repeating at random intervals, mixed
-together. You can run it online and observe temporal pooling in the
-higher region after about 300 time steps:
+together. See section **The data** below. You can run it online and
+observe temporal pooling in the higher region after about 300 time
+steps:
 
 [Sequences mixed with variable gaps](/assets/2014-09-26/mixed_gaps_1d.html)
 
@@ -584,9 +585,6 @@ simulation.
 {% endhighlight %}
 
 
-Thanks for reading this. I would appreciate your advice.
-
-
 ## The code
 
 The demo here was compiled from
@@ -596,7 +594,46 @@ The demo here was compiled from
 The extra analysis code is here:
 [temporal_pooling_experiments.clj](/assets/2014-09-26/temporal_pooling_experiments.clj).
 
+## The data
 
+The (toy) problem domain I have constructed here is an attempt to test
+temporal pooling and sequence memory in a simple but meaningful way. I
+would like others to try simulating the same problem domain, or to
+suggest any other that can serve as a kind of benchmark or shared
+example.
+
+The input is made up from 6 different fixed patterns, named as
+follows:
+
+| `run-0-5`   | `[0 1 2 3 4 5]            ` |
+| `rev-5-1`   | `[5 4 3 2 1]              ` |
+| `run-6-10`  | `[6 7 8 9 10]             ` |
+| `jump-6-12` | `[6 7 8 11 12]            ` |
+| `twos`      | `[0 2 4 6 8 10 12 14]     ` |
+| `saw-10-15` | `[10 12 11 13 12 14 13 15]` |
+
+These patterns are fed into the input stream, each instance separated
+from its next repeat by a gap with random duration of between 1 and 75
+time steps. As such, the input on each timestep is a set of (up to 6)
+integers in the range [0 15]. These are encoded by simply dividing up
+the input array (of 400 bits) into 16 non-overlapping blocks and
+activating the block corresponding to the integer. The encoded bits
+from each integer are ORed together. The code is
+[mixed_gaps_1d.cljx](https://github.com/floybix/comportex/blob/master/src/cljx/org/nfrac/comportex/demos/mixed_gaps_1d.cljx).
+
+> I have generated a CSV data file containing 10,000 time steps of the
+> input stream:
+> [mixed_fixed_1d_10k.csv](/assets/2014-09-26/mixed_fixed_1d_10k.csv)
+> (70kb).
+> 
+> The file has 6 columns containing either integers or blanks. The set
+> of integers from each row should be encoded with a scalar encoder of
+> range [0 15], bit width 400, and 25 active bits. The final input set
+> is the union of the active bits from each encoded integer.
+
+
+
+Thanks for reading this. I would appreciate your advice.
 
 *--Felix*
 

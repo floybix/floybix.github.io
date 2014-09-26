@@ -167,6 +167,17 @@
     (use 'clojure.repl)
     (require :reload-all 'org.nfrac.comportex.demos.mixed-gaps-1d)
     )
+
+  (println "## generate input data and save to data file")
+
+  (->> (demo/input-gen)
+       (iterate core/feed-forward-step)
+       (map core/domain-value)
+       (map (fn [input] (util/remap demo/current-value input)))
+       (take 10000)
+       (print-csv demo/pattern-order)
+       (with-out-str) (spit "mixed_fixed_1d_10k.csv"))
+
   
   (println "## baseline")
 
