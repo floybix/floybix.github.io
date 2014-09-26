@@ -6,10 +6,10 @@ tags: comportexviz
 ---
 {% include JB/setup %}
 
-_In which I implement temporal pooling and test it with fancy
-statistics, only to realise a more fundamental problem: my sequence
-memory algorithm isn't predicting mixed sequences well enough (which
-is a prerequisite to temporal pooling over them)._
+_In which I implement a temporal pooling mechanism and test it with
+fancy statistics, only to realise a more fundamental problem: my
+sequence memory algorithm isn't predicting mixed sequences well enough
+(which is a prerequisite to temporal pooling over them)._
 
 A central idea in Hierarchical Temporal Memory is that activity in the
 cortex becomes more stable as one looks further up in the hierarchy of
@@ -17,8 +17,8 @@ cortical regions. Taking vision as an example, the first regions
 respond to small parts of the retina and change rapidly. Higher
 regions will have stable representations of, say, an elephant as we
 look at it from any angle. This process of abstracting up the
-hierarchy is referred to as _temporal pooling_. You can read about
-Jeff Hawkins' [new ideas about temporal
+hierarchy is referred to as _temporal pooling_. You can read Jeff
+Hawkins' [new ideas about temporal
 pooling](https://github.com/numenta/nupic/wiki/New-Ideas-About-Temporal-Pooling).
 
 There should be specific cells which become active in response to,
@@ -26,19 +26,19 @@ say, an elephant and not for anything else. We can measure this on
 labelled input data with standard classification metrics. Given a
 candidate cell:
 
-* ''Sensitivity'' is the fraction of elephant observations on which
+* **Sensitivity** is the fraction of elephant observations on which
   the cell was (correctly) active.
 
-* ''Specificity'' is the fraction of non-elephant observations on which
-  the cell was (correctly) inactive.
+* **Specificity** is the fraction of non-elephant observations on
+  which the cell was (correctly) inactive.
 
-* ''Precision'' is the fraction of the cell's activations on which an
+* **Precision** is the fraction of the cell's activations on which an
   elephant was in fact being observed.
 
 I have attempted to implement a mechanism for temporal pooling. For
-now, the implementation does not cover the full sensori-motor scheme,
-(Layer 3 not Layer 4) so the experiments I describe here use only
-sensory inputs.
+now, the implementation does not cover the full sensori-motor scheme
+(only Layer 3 not Layer 4), so the experiments I describe here use
+only sensory inputs.
 
 ## Mechanism
 
@@ -62,7 +62,7 @@ be seen. Further insights from the biology may help to clarify it.
 Anyway, my mechanism step-by-step:
 
 1. The overlap score of each column with the input is computed as
-usual, but any existing temporal pooling scores (from step 5) replace
+usual, but any existing temporal pooling scores (see step 5) replace
 the current overlap scores.
 [code](https://github.com/floybix/comportex/blob/779374d276ae15174d16c5ff5deab501f1f699e4/src/cljx/org/nfrac/comportex/pooling.cljx#L533)
 
@@ -104,7 +104,7 @@ one-dimensional sequences, each repeating at random intervals, mixed
 together. You can run it online and observe temporal pooling in the
 higher region after about 300 time steps:
 
-[Sequences mixed with variable gaps](/assets/2014-09-23/mixed_gaps_1d.html)
+[Sequences mixed with variable gaps](/assets/2014-09-26/mixed_gaps_1d.html)
 
 > __Note:__ will load ~500k of Javascript. Maximise browser window
 > before loading page. Google Chrome browser recommended.
@@ -124,7 +124,7 @@ This screenshot gives an example of temporal pooling:
 
 The block on the left shows the input bits, arranged in time steps
 from left to right. The middle block shows columns of the first
-region, in corresponding time steps from left to right. _Yes I know it
+region, in corresponding time steps from left to right. _Yes it
 is confusing that the "columns" (neural minicolumns) of a region are
 themselves arranged in a column (tabular column) for this
 visualisation._ The next block shows columns of the second region,
@@ -155,8 +155,8 @@ To measure the sensitivity, specificity and precision of temporal
 pooling over a given input pattern, we need to come up with some
 candidate cells. I did this by "warming up" the system for 5000 time
 steps, then keeping the following 2000 time steps. I filtered them
-down to those with the given pattern (excluding the first step where a
-pattern appears, which is unpredictable), and selected the top 3 most
+down to where the given pattern occurs (excluding the first step it
+appears on, which is unpredictable), and selected the top 3 most
 frequently active temporal pooling cells. These are my candidates.
 
 It is then a simple matter to compute sensitivity, specificity and
@@ -281,7 +281,7 @@ high, sensitivity is low---under 60%---meaning that none of the
 candidate cells can reliably indicate the presence of its pattern on
 its own.
 
-### Hypotheses
+## ad-lib hypotheses
 
 1. The visual display suggested that cells were indeed staying active
 over any one pattern instance, but not necessarily the same cells for
@@ -308,7 +308,7 @@ This seems to promise more consistent column activations, rather than
 the current approach of randomly choosing between any columns with
 equal receptive field overlaps.
 
-### Consistency between pattern instances
+## Consistency between pattern instances
 
 Is the problem just randomness in the choice of active colums when
 each pattern instance appears? If so then I would expect if we looked
@@ -316,9 +316,10 @@ over a few candidate cells then collectively they would cover all
 instances of the pattern.
 
 Since I am concerned with the sensitivity measure, I filtered the time
-steps down to just those where the pattern is occuring. Below is a
-plot of the activations over time of 25 candidate cells, being the top
-ones by overall sensitivity. I did this for three different patterns.
+steps down to just those where the pattern is occuring, grouped into
+each instance of its occurence. Below is a plot of activations over
+time of 25 candidate cells, being the top ones by overall sensitivity.
+I did this for three different patterns.
 
 {% raw %}
 <style>
@@ -486,7 +487,7 @@ ones by overall sensitivity. I did this for three different patterns.
 </div>
 {% endraw %}
 
-The picture is more complicated than I thought. In fact different
+The picture is not what I expected. Different
 candidate cells do not seem to be complementary in their activations,
 they seem remarkably similar. Some pattern instances see widespread
 pooling while others do not see pooling at all (i.e. if you look down
@@ -511,23 +512,49 @@ instances, so of course they are not being pooled over.
  style="float:left; margin-right: 1ex;" />
 
 While pattern instances that appear in isolation are generally fully
-predicted, when two patterns are mixed together the predictions seem
-to fail.
+predicted, when two patterns occur together the predictions seem to
+fail.
 
 Take this example, after a generous training period of 4000 time
 steps. Four pattern instances are visible (`rev-5-1`, `run-0-5`,
-`jump-6-12`, `run-6-10`), and all by the third have interference
+`jump-6-12`, `run-6-10`), and all but the third have interference
 problems.
+
+The clearest case is the last pattern: its initial time step is
+predicted based on the final step of the previous pattern; but this is
+a spurious prediction since its occurence is random. So, only one cell
+per column is active instead of the usual full bursting, and it is
+evidently not the one that usually predicts the next step of the
+pattern. The next step appears unexpectedly and bursts the columns.
+After that the sequence prediction recovers. **This suggests that
+failing predictions should be more harshly punished?**
+
+The first pattern is missed on its final timestep, probably due to the
+mixed input on the second-last time step activating different columns
+from the ones which usually predict the final time step. **This
+suggests that columns should be preferentially activated if they
+contain predictive cells?**
+
+A different kind of prediction failure is shown in the screenshot
+below. The pattern sequence prediction breaks down after correctly
+predicting the first 4 time steps. Inspecting the dendrite segments
+shown we can see there is one that has fallen just below the
+activation threshold (it has an activation level of 8 and the
+threshold is 9). This would have been caused by prior incorrect
+predictions being punished, i.e. the segment synapses being weakened.
+**This suggests that failing predictions should be less harshly
+punished??**
 
 ![](/assets/2014-09-26/pattern_prediction_decay.png)
 
 
-## The curse of parameters
+## The curse of parametricality
 
 I'll need to go back to the basic algorithm and confront the many
 implementation details and parameter values I have chosen. For
 reference here are the parameter values I used in the simulations
-described above.
+described above. You can also view and modify them in the online
+simulation.
 
 {% highlight clojure %}
 (def spec
@@ -556,8 +583,8 @@ described above.
    })
 {% endhighlight %}
 
-My gut feeling at the moment is that I should decrease the amount of
-punishment for lateral predictions which were not fulfilled.
+
+Thanks for reading this. I would appreciate your advice.
 
 
 ## The code
