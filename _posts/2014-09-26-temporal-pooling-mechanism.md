@@ -42,6 +42,10 @@ only sensory inputs.
 
 ## Mechanism
 
+_EDIT: this idea was first
+[http://lists.numenta.org/pipermail/nupic-theory_lists.numenta.org/2014-August/001112.html](articulated
+by Jake Bruce)._
+
 My mechanism extends the standard _spatial pooling_ (also known as
 _pattern memory_), selecting which columns in a region become active.
 The input data are the active cells from the region below, as well as
@@ -59,7 +63,7 @@ dominant overlap scores because bursting column activation is dense
 compared to the sparse (one cell per column) activation from predicted
 columns. Whether that is a reasonable assumption in general remains to
 be seen. Further insights from the biology may help to clarify it.
-Anyway, my mechanism step-by-step:
+Anyway, the mechanism step-by-step:
 
 1. The overlap score of each column with the input is computed as
 usual, but any existing temporal pooling scores (see step 5) replace
