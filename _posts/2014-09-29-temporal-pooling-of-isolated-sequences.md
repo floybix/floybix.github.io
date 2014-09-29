@@ -266,7 +266,7 @@ problems.
 If we see a sequence starting from the second element, it will
 activate some of these pooling cells but not the ones which are
 normally activated on the first element. It seems to me that these
-original pooling cells should be reactived somehow from observing
+original pooling cells should be reactivated somehow from observing
 later parts of the sequence. [I have raised this question
 before](http://lists.numenta.org/pipermail/nupic-theory_lists.numenta.org/2014-August/001138.html).
 One way this could work is by lateral activation between temporal
