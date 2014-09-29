@@ -42,9 +42,8 @@ only sensory inputs.
 
 ## Mechanism
 
-_EDIT: this idea was first
-[http://lists.numenta.org/pipermail/nupic-theory_lists.numenta.org/2014-August/001112.html](articulated
-by Jake Bruce)._
+_EDIT: this idea was first [articulated by Jake
+Bruce](http://lists.numenta.org/pipermail/nupic-theory_lists.numenta.org/2014-August/001112.html)._
 
 My mechanism extends the standard _spatial pooling_ (also known as
 _pattern memory_), selecting which columns in a region become active.
