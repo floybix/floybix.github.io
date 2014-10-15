@@ -7,12 +7,11 @@ tags: comportexviz, language
 {% include JB/setup %}
 
 _In which I make an interactive demo of word sequence learning with
-HTM, with an eye to generalisation. I find some generalisation through
-word representations mixing their feed-forward receptive fields. This
-happens due to biasing column activations to depolarised cells. Of
-course this is only a superficial start at looking at generalisation._
-
-TODO - startup time!
+HTM, with an eye to how generalisation might happen. I find some
+generalisation through word representations mixing their feed-forward
+receptive fields. This occurs because I bias column activations to
+depolarised cells. Of course this is only a superficial start at
+looking at generalisation._
 
 On [Rob Freeman's
 insistence](http://lists.numenta.org/pipermail/nupic-theory_lists.numenta.org/2014-October/001403.html)
@@ -27,7 +26,8 @@ So I made up some simple sentences which share context. Each sentence
 is presented as a sequence of words, where each word is given a unique
 representation completely unrelated to the other words. This is in
 contrast to the approach of [cortical.io](http://cortical.io/), which
-represents semantic overlap between words in their encoding for input.
+represents semantic overlap between words in their encoding for input
+to HTM (not that I know anything much about it).
 
 <pre>
 > Jane has eyes .
@@ -70,33 +70,33 @@ when it gets to "`Chifung has a`", before `brain`, then `brain` and
 `mouth`). This is generalisation because it would never have seen the
 exact sequence "`Chifung has a brain`" before.
 
-Some technical details with the input. Each sentence is presented 3
-times so that synapses can learn enough to become connected. I
-presented the words "Jane" and "Chifung" on their own to stabilise
-their feed-forward receptive fields before starting the sentences.
-Sentences are separated by a gap (a time step with no input at all),
-which allows the next sequence to start fresh, without continuous
-context. It is useful to include a start token (">") and end token
-(".") on each, so that words can have a specific representation for
-starting a sentence, and so the end of a sentence can be predicted.
+Some technical details with the input. I present each sentence 3 times
+so that synapses can learn enough to become connected. I start by
+presenting the words "Jane" and "Chifung" on their own to stabilise
+their feed-forward receptive fields. Sentences are separated by a gap
+(a time step with no input at all), which allows the next sequence to
+start fresh, without continuous context. It is useful to include a
+start token (">") and end token (".") on each, so that words can have
+a specific representation for starting a sentence, and so the end of a
+sentence can be predicted.
 
 ### Predictions and votes
 
-How do we extract predictions from HTM in terms of the source input
-words? We start with the set of cells in the predictive state. Through
-their columns, we trace back their proximal synapses connected to the
-encoded input bit array. This gives us a number of **votes** (number
-of connected synapses) for each input bit. Going over each possible
-word, we work out the percentage of votes falling in each word's
-bit-set, and the average number of votes over the word's complete
-bit-set. (These would only give different orderings if the inputs were
-of different sizes).
+How can we extract predictions from HTM in terms of the source input
+words? Start with the set of cells in the predictive state. Through
+their columns, trace back their proximal synapses connected to the
+encoded input bit array. This gives a number of **votes** (number of
+connected synapses) for each input bit. Going over each possible word,
+work out the percentage of votes falling in that word's bit-set, and
+the average number of votes over the word's complete bit-set. (These
+would only give different orderings if the inputs were of different
+sizes).
 
 
 ## Play with it
 
-Here's the interactive demo. This time, you have the option to enter
-your own input!
+Here's the interactive demo. You also have the option to enter your
+own input!
 
 [Simple sentences demo](/assets/2014-10-15/simple_sentences.html)
 
@@ -106,16 +106,17 @@ your own input!
 
 ## Results
 
-In case you're too lazy or browser-impaired to run through the demo
-yourself, here are some highlights using my default parameter values.
+Here are some highlights of the above demo using my default parameter
+values.
 
-First, a very crude generalisation can be seen as a consequence of
-_bursting_. Columns burst when they are activated by input they didn't
-predict. In that case all cells in the columns become active, and
-consequently, predictions are made from that input in _any_ previous
-context. For example, when first presented with "`Chifung has`", that
-"`has`" is bursting and so opens up the previously-learned associations
-(see **Predictions** at the bottom left):
+First, a very basic sort of generalisation can be seen as a
+consequence of _bursting_. Columns burst when they are activated by
+input they didn't predict. In that case all cells in the columns
+become active, and consequently, predictions are made from that input
+in _any_ previous context. For example, when first presented with
+"`Chifung has`", that "`has`" is bursting and so opens up the
+previously-learned associations (see **Predictions** at the bottom
+left):
 
 ![Bursting,
  predictions](/assets/2014-10-15/generalisation_bursting.png)
@@ -139,21 +140,21 @@ Note that the predictions are fairly light, at only 1 to 2 votes per
 bit, so not enough to stop the transition from bursting on first
 exposure to an actual input of "`brain`".
 
-This is a result of the columns representing "`mouth`" sharing
-feed-forward synapses with those representing "`brain`", "`head`" and
-"`book`":
+These predictions are a result of the columns representing "`mouth`"
+overlapping---and thus sharing feed-forward synapses with---those
+representing "`brain`", "`head`" and "`book`":
 
 ![Feed-forward synapses for 'mouth' overlapping with 'brain', 'head'
  and 'book'](/assets/2014-10-15/ff_synapses_mouth.png)
 
-So, how did that happen? Well, a recently added feature in my code is
+So, how did that arise? Well, a recently added feature in my code is
 to bias columns containing predicted (depolarised) cells to become
-active---an idea I got from [Fergal
+active; an idea I got from [Fergal
 Byrne](http://lists.numenta.org/pipermail/nupic-theory_lists.numenta.org/2014-August/001165.html).
-Consequently, when the representation of "`mouth`" was first formed in
-"`Jane has a mouth`", the columns/cells for "`head`" were predicted,
-and therefore some became active. Active columns refine their input
-fields to the current input, so this led to the overlap in
+When the representation of "`mouth`" was first formed in "`Jane has a
+mouth`", the columns/cells for "`head`" were being predicted, and
+consequently some became active. Since active columns adapt their
+input fields to the current input, this led to the overlap in
 representations. Similarly the later inputs "`brain`" and "`book`"
 appeared when `"mouth"` was predicted and so ended up overlapping with
 it.
