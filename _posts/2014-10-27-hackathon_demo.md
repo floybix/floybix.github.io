@@ -14,14 +14,16 @@ open with their work and supportive of the community.
 
 It feels like we are at the cusp of a revolution, where a few more
 good ideas will really make this thing fly. So it was inspiring to
-hear from Jeff Hawkins and others about the current challenges. 
+hear from Jeff Hawkins about the current challenges, and to see
+Chetan and Yuwei's [brilliant demonstration of temporal pooling in
+action](http://www.youtube.com/watch?v=-aCYujW7QSc).
 
 I was particularly glad to meet fellow functional programmers
 including _system designer and Clojurist_ Fergal Byrne, _Clojurist /
 Clojurescripter_ Marcus Lewis, _Racketeer_ Rian Shams and _Lisper_
 Eric McCarthy.
 
-My hack was a [cortical.io](cortical.io) encoder, for semantic
+My hack was a [cortical.io](http://cortical.io) encoder, for semantic
 representation of words as input to HTM. In Comportex. The approach
 was to make requests to the [cortical.io REST
 API](http://www.cortical.io/developers_apidocumentation.html) and
