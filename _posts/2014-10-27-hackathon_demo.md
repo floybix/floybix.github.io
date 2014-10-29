@@ -35,11 +35,6 @@ implemented two dimensional field visualisations in ComportexViz.
 **Here it is:** [interactive demo of cortical.io
 encoder](/assets/2014-10-27/cortical_io.html).
 
-> __But__ until cortical.io change their server configuration to allow
-> [CORS requests](http://www.html5rocks.com/en/tutorials/cors/) this
-> does not work; a workaround is to start Google Chrome like this:<br/>
-> `google-chrome --disable-web-security`
-
 > __Note:__ will load ~800k of Javascript and may take up to a minute
 > to initialise. Maximise browser window before loading page. Google
 > Chrome browser recommended.
