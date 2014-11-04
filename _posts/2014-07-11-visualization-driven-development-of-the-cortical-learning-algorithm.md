@@ -61,8 +61,8 @@ pages.
 * [Mixed Fixed](/assets/2014-07-11/mixed_fixed_1d.html)
 * [Block Steps](/assets/2014-07-11/block_steps.html)
 
-> __Note:__ will load ~500k of Javascript. Maximise browser window
-> before loading page. Google Chrome browser recommended.
+> __Note:__ Maximise browser window before loading page. Google Chrome
+> browser recommended.
 
 
 ## The code

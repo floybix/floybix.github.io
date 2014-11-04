@@ -30,8 +30,8 @@ comes with an interactive demo.
 
 [Sequences in isolation](/assets/2014-09-29/isolated_1d.html)
 
-> __Note:__ will load ~500k of Javascript. Maximise browser window
-> before loading page. Google Chrome browser recommended.
+> __Note:__ Maximise browser window before loading page. Google Chrome
+> browser recommended.
 
 The sequence are well predicted after a few hundred time steps, and
 consequently temporal pooling emerges in the higher-level region.

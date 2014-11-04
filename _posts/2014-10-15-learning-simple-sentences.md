@@ -100,8 +100,8 @@ own input!
 
 [Simple sentences demo](/assets/2014-10-15/simple_sentences.html)
 
-> __Note:__ will load ~500k of Javascript. Maximise browser window
-> before loading page. Google Chrome browser recommended.
+> __Note:__ Maximise browser window before loading page. Google Chrome
+> browser recommended.
 
 
 ## Results
