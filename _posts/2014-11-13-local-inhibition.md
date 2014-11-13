@@ -90,6 +90,8 @@ Finally here is a basic example of the algorithm running in HTM:
 
 <a href="/assets/2014-11-13/demos/isolated_2d.html">Isolated fixed sequences 2D</a>.
 
+> __Note:__ Google Chrome browser recommended.
+
 
 ## Perf
 
