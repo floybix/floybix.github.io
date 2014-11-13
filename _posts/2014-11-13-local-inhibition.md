@@ -6,6 +6,14 @@ tags: [comportex]
 ---
 {% include JB/setup %}
 
+_In which I propose and demonstrate a new local inhibition algorithm
+for HTM that seems more natural than existing methods. I attempt to
+model the waves of inhibition around firing neurons. A target level of
+sparsity is maintained by an adaptive control on the stimulus
+threshold parameter. One could imagine other formulations and I look
+forward to hearing other ideas._
+
+
 A crucial step in HTM is the selection of neural columns to become
 active, given their feed-forward inputs. Essentially, only those with
 most excitation will be activated, forming a sparse representation.
@@ -101,7 +109,7 @@ columns. But it is not as bad as _(number of columns) X (inhibition
 radius)_, because as columns are inhibited they are removed and
 ignored. The performance depends on distributional properties of the
 input. Also the stimulus threshold works to reduce the problem size.
-In one test I ran on Comportex, the local algorithm was about 30X
+In one (fairly arbitrary) test I ran on Comportex, the local algorithm was about 30X
 slower than a simple sort. However, usually the inhibition step is not
 the slowest part of a time step in Comportex; rather, learning on
 proximal synapses takes longer.
