@@ -2,7 +2,7 @@
 layout: post
 title: "Temporal Pooling Mechanism"
 description: ""
-tags: comportexviz
+tags: [comportex, comportexviz, temporal-pooling]
 ---
 {% include JB/setup %}
 

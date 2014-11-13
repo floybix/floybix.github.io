@@ -2,7 +2,7 @@
 layout: post
 title: "HTM protocols"
 description: ""
-tags: comportexviz
+tags: [comportex]
 ---
 {% include JB/setup %}
 

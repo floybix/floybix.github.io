@@ -2,7 +2,7 @@
 layout: post
 title: "Visualization Driven Development of the Cortical Learning Algorithm"
 description: ""
-tags: comportexviz
+tags: [comportex, comportexviz]
 ---
 {% include JB/setup %}
 

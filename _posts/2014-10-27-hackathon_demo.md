@@ -2,7 +2,7 @@
 layout: post
 title: "Hackathon demo: cortical.io encoder"
 description: ""
-tags: comportexviz, language
+tags: [comportexviz, language]
 ---
 {% include JB/setup %}
 

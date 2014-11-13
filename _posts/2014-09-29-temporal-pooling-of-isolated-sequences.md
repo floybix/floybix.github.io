@@ -2,7 +2,7 @@
 layout: post
 title: "Temporal Pooling of Isolated Sequences"
 description: ""
-tags: comportexviz
+tags: [comportex, comportexviz, temporal-pooling]
 ---
 {% include JB/setup %}
 

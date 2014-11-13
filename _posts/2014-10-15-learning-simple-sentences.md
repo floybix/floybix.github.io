@@ -2,7 +2,7 @@
 layout: post
 title: "Learning Simple Sentences"
 description: ""
-tags: comportexviz, language
+tags: [comportex, comportexviz, language]
 ---
 {% include JB/setup %}
 
