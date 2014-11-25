@@ -71,6 +71,24 @@ Columns with excitation below the stimulus threshold can not become
 active. This is a global mechanism, but operates at a longer time
 scale; perhaps there is some neurochemical process like this?
 
+> **UPDATE 2014-11-25:** There is a problem with the adaptive stimulus
+> threshold. After training on familiar input for a while, it becomes
+> well recognised with many connected synapses so the stimulus
+> threshold rises. When new input comes in, it has fewer connected
+> synapses, i.e. a lower stimulus value. This gives rises to too
+> few---even zero---active columns. Bad! Anyway, we can simply take
+> the top N most excited columns after accounting for local
+> inhibition. That is the same as having the threshold adapt
+> immediately within one time step.
+>
+> This algorithm is a "local algorithm" in the sense that it considers
+> local spatial interactions in its processing. But it is not a "local
+> algorithm" in the sense that its computation is distributed. Of
+> course one could split up the column space and run inhibition on
+> each chunk, but that is not my focus here. Rather I am interested in
+> whether accounting for local interactions could have some effect on
+> information processing.
+
 
 ## Interactive demonstration
 
@@ -98,7 +116,7 @@ Finally here is a basic example of the algorithm running in HTM:
 
 <a href="/assets/2014-11-13/demos/isolated_2d.html">Isolated fixed sequences 2D</a>.
 
-> __Note:__ Google Chrome browser recommended.
+_Note: Google Chrome browser recommended._
 
 
 ## Perf
@@ -108,11 +126,10 @@ approach, which scales approximately linearly by the number of
 columns. But it is not as bad as _(number of columns) X (inhibition
 radius)_, because as columns are inhibited they are removed and
 ignored. The performance depends on distributional properties of the
-input. Also the stimulus threshold works to reduce the problem size.
-In one (fairly arbitrary) test I ran on Comportex, the local algorithm was about 30X
-slower than a simple sort. However, usually the inhibition step is not
-the slowest part of a time step in Comportex; rather, learning on
-proximal synapses takes longer.
+input. In one (fairly arbitrary) test I ran on Comportex, the local
+algorithm was about 25X slower than a simple sort. However, usually
+the inhibition step is not the slowest part of a time step in
+Comportex; rather, learning on proximal synapses takes longer.
 
 
 ## The code
@@ -125,6 +142,10 @@ with Comportex 0.0.6
 [inhibition.cljx](https://github.com/nupic-community/comportex/blob/9af5dd11ad1b9971eaee81e2190288c1576d7878/src/cljx/org/nfrac/comportex/inhibition.cljx#L64)
 and tuning the stimulus threshold is in
 [cells.cljx](https://github.com/nupic-community/comportex/blob/9af5dd11ad1b9971eaee81e2190288c1576d7878/src/cljx/org/nfrac/comportex/cells.cljx#L494)).
+
+> **UPDATE 2014-11-25:** fixed version is Comportex 0.0.7 and
+> ComportexViz 0.0.7. Inhibition code is in
+> [inhibition.cljx](https://github.com/nupic-community/comportex/blob/cdb4fa597699548dc9ca5a17cbc35b279e241e18/src/cljx/org/nfrac/comportex/inhibition.cljx#L102).
 
 
 As always, I value your advice.

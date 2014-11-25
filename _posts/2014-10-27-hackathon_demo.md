@@ -35,8 +35,8 @@ implemented two dimensional field visualisations in ComportexViz.
 **Here it is:** [interactive demo of cortical.io
 encoder](/assets/2014-10-27/cortical_io.html).
 
-> __Note:__ may take up to a minute to initialise. Maximise browser
-> window before loading page. Google Chrome browser recommended.
+_Note: may take up to a minute to initialise. Maximise browser
+window before loading page. Google Chrome browser recommended._
 
 Er, there is also [a video](http://www.youtube.com/watch?v=hE6alw_HHrk)
 of me presenting this... but I didn't present it well. I was so

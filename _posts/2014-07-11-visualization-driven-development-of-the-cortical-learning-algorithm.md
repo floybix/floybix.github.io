@@ -61,8 +61,8 @@ pages.
 * [Mixed Fixed](/assets/2014-07-11/mixed_fixed_1d.html)
 * [Block Steps](/assets/2014-07-11/block_steps.html)
 
-> __Note:__ Maximise browser window before loading page. Google Chrome
-> browser recommended.
+_Note: Maximise browser window before loading page. Google Chrome
+browser recommended._
 
 
 ## The code
@@ -113,11 +113,11 @@ all active cells?
 
 6. Should a cell learn only when it changes state, or every time step?
 
-_UPDATE: Chetan very helpfully answered my questions on the mailing
-list
-[here](http://lists.numenta.org/pipermail/nupic-theory_lists.numenta.org/2014-July/000899.html).
-My implementation matches his description except for point 6 (I had
-learning every time step even on continuing cells)._
+> UPDATE: Chetan very helpfully answered my questions on the mailing
+> list
+> [here](http://lists.numenta.org/pipermail/nupic-theory_lists.numenta.org/2014-July/000899.html).
+> My implementation matches his description except for point 6 (I had
+> learning every time step even on continuing cells).
 
 ## Pressing ahead
 

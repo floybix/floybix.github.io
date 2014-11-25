@@ -110,8 +110,8 @@ steps:
 
 [Sequences mixed with variable gaps](/assets/2014-09-26/mixed_gaps_1d.html)
 
-> __Note:__ Maximise browser window before loading page. Google Chrome
-> browser recommended.
+_Note: Maximise browser window before loading page. Google Chrome
+browser recommended._
 
 In the visualisation, columns are coloured as follows:
 

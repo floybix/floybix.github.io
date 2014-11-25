@@ -100,8 +100,8 @@ own input!
 
 [Simple sentences demo](/assets/2014-10-15/simple_sentences.html)
 
-> __Note:__ Maximise browser window before loading page. Google Chrome
-> browser recommended.
+_Note: Maximise browser window before loading page. Google Chrome
+browser recommended._
 
 
 ## Results
