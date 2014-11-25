@@ -53,12 +53,19 @@ conventional). To satisfy the protocol, an object must implement its
 functions: `htm-activate`, `htm-learn`, `htm-depolarise`,
 `region-seq`, `input-seq` and `update-by-uuid`. Such an implementation
 is given in
-[core.cljx](https://github.com/nupic-community/comportex/blob/3ea2075e21e26459a2840865e593e6b08dc23ceb/src/cljx/org/nfrac/comportex/core.cljx#L248).
+[core.cljx](https://github.com/nupic-community/comportex/blob/7b3be4b43316ab361c0e3da440e456c3eedcc715/src/cljx/org/nfrac/comportex/core.cljx#L194).
+
+> **UPDATE 2014-11-25:** Originally I had sensory input on each time
+> step arriving via input sources/channels embedded in an HTM model.
+> [Marcus Lewis](https://twitter.com/mrcslws) helped me to realise the
+> path of functional purity (and clojurescript compatibility) lies in
+> passing the input value as an argument to the step function. Exactly
+> the kind of feedback I needed.
 
 {% highlight clojure %}
 (defprotocol PHTM
-  "A network of regions and their inputs, forming Hierarchical Temporal Memory."
-  (htm-activate [this])
+  "A network of regions, forming Hierarchical Temporal Memory."
+  (htm-activate [this in-value])
   (htm-learn [this])
   (htm-depolarise [this])
   (region-seq [this])
@@ -68,9 +75,9 @@ is given in
      its UUID. Returns the modified HTM network."))
 
 (defn htm-step
-  [this]
+  [this in-value]
   (-> this
-      (htm-activate)
+      (htm-activate in-value)
       (htm-learn)
       (htm-depolarise)))
 {% endhighlight %}
