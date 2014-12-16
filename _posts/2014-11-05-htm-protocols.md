@@ -50,9 +50,8 @@ received feed-forward input from the same time step.
 
 This idea is behind the `PHTM` protocol (the prefix `P` is
 conventional). To satisfy the protocol, an object must implement its
-functions: `htm-activate`, `htm-learn`, `htm-depolarise`,
-`region-seq`, `input-seq` and `update-by-uuid`. Such an implementation
-is given in
+functions: `htm-activate`, `htm-learn`, `htm-depolarise`.
+Such an implementation is given in
 [core.cljx](https://github.com/nupic-community/comportex/blob/7b3be4b43316ab361c0e3da440e456c3eedcc715/src/cljx/org/nfrac/comportex/core.cljx#L194).
 
 > **UPDATE 2014-11-25:** Originally I had sensory input on each time
@@ -67,12 +66,7 @@ is given in
   "A network of regions, forming Hierarchical Temporal Memory."
   (htm-activate [this in-value])
   (htm-learn [this])
-  (htm-depolarise [this])
-  (region-seq [this])
-  (input-seq [this])
-  (update-by-uuid [this region-uuid f]
-    "Applies function `f` to the region in a HTM network identified by
-     its UUID. Returns the modified HTM network."))
+  (htm-depolarise [this]))
 
 (defn htm-step
   [this in-value]
