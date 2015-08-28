@@ -23,7 +23,7 @@ implementations to be supplied separately as needed.
 Comportex's protocols cover networks, regions, layers, synapses,
 sensory inputs, encoders and topologies in about 150 lines (er, thanks
 in part to the paucity of documentation), and can be read in full at
-[protocols.cljx](https://github.com/nupic-community/comportex/blob/master/src/cljx/org/nfrac/comportex/protocols.cljx).
+[protocols.cljc](https://github.com/nupic-community/comportex/blob/master/src/org/nfrac/comportex/protocols.cljc).
 
 I would like to focus on two protocols.
 
@@ -50,9 +50,9 @@ received feed-forward input from the same time step.
 
 This idea is behind the `PHTM` protocol (the prefix `P` is
 conventional). To satisfy the protocol, an object must implement its
-functions: `htm-activate`, `htm-learn`, `htm-depolarise`.
+functions: `htm-sense`, `htm-activate`, `htm-learn`, `htm-depolarise`.
 Such an implementation is given in
-[core.cljx](https://github.com/nupic-community/comportex/blob/7b3be4b43316ab361c0e3da440e456c3eedcc715/src/cljx/org/nfrac/comportex/core.cljx#L194).
+[core.cljc](https://github.com/nupic-community/comportex/blob/master/src/org/nfrac/comportex/core.cljc)
 
 > **UPDATE 2014-11-25:** Originally I had sensory input on each time
 > step arriving via input sources/channels embedded in an HTM model.
@@ -61,26 +61,33 @@ Such an implementation is given in
 > passing the input value as an argument to the step function. Exactly
 > the kind of feedback I needed.
 
+> **UPDATE 2015-08-28:** The activation step has been further
+> decomposed into `htm-sense` to encode input senses and
+> `htm-activate` to do the feed-forward pass through the network,
+> activating cells and columns. See
+> [issue #19](https://github.com/nupic-community/comportex/issues/19#issuecomment-133713863).
+
 {% highlight clojure %}
 (defprotocol PHTM
   "A network of regions, forming Hierarchical Temporal Memory."
-  (htm-activate [this in-value])
+  (htm-sense [this in-value]
+  (htm-activate [this])
   (htm-learn [this])
   (htm-depolarise [this]))
 
 (defn htm-step
   [this in-value]
   (-> this
-      (htm-activate in-value)
+      (htm-sense in-value)
+      (htm-activate)
       (htm-learn)
       (htm-depolarise)))
 {% endhighlight %}
 
 I define a function here too, `htm-step`, which takes an object
-satisfying the `PHTM` protocol and applies to it the three functions
-`htm-activate`, `htm-learn` and `htm-depolarise` in that order. This
-function returns the HTM network advanced one time step and is the
-centrepiece of the API.
+satisfying the `PHTM` protocol and applies to it the functions in
+canonical order. This function returns the HTM network advanced one
+time step and is the centrepiece of the API.
 
 Depolarisation comes after activation because we often want to use
 depolarised cells to make predictions of the next time step. One
@@ -97,13 +104,13 @@ elegant.
 
 Of course for all this to work it needs to call corresponding
 functions on individual regions, and within regions on layers of
-cells. So:
+cells.
 
 {% highlight clojure %}
 (defprotocol PRegion
   "Cortical regions need to extend this together with PTopological,
    PFeedForward, PTemporal, PParameterised."
-  (region-activate [this ff-bits signal-ff-bits])
+  (region-activate [this ff-bits stable-ff-bits])
   (region-learn [this ff-bits])
   (region-depolarise [this distal-ff-bits distal-fb-bits]))
 {% endhighlight %}
@@ -127,17 +134,36 @@ synapse connections. Usually, proximal synapses are represented and
 used very differently to distal synapses (e.g. in Numenta's CLA White
 Paper). Potential proximal synapses are represented as a fixed
 explicit list, whereas distal synapses start empty and grow and die
-over time. I wanted to try the latter (implicit) approach for proximal
+over time. I wanted to try the latter implicit approach for proximal
 synapses too. This led to a protocol encompassing both cases.
 
 Synapse graphs as presented here represent the connections from a set
 of sources to a set of targets. In the case of proximal synapses the
-sources will be input bits and the targets will be column ids. In the
-case of distal synapses the sources will be cell ids (typically in the
-same layer) and the targets will be distal dendrite segment ids.
+sources will be input bits and the targets will be columns. In the
+case of distal synapses the sources will be cells (typically in the
+same layer but not necessarily) and the targets will be distal
+dendrite segments.
 
 The choice of how to represent the set of potential synapses,
 explicitly or implicitly, can be made separately.
+
+> **UPDATE 2015-08-28:** Originally I had defined functions here that
+> operated on a single synaptic target at a time, reinforcing its
+> synapses or adding or removing synapses. So the learning algorithms
+> involved looping over a lot of targets to update each
+> one. Essentially, procedural programming.
+>
+> I realised a better way is to build a list representing the updates,
+> before applying those updates in one go: `bulk-learn`. Like the way
+> Datomic works, you build up transaction data structures before
+> submitting them. This is faster because it allows transient mutation
+> to be used (we don't need intermediate states); allows the updates
+> to be inspected easily; and is just cleaner.
+>
+> Also, I moved `excitations`, the function calculating activity in a
+> whole layer of cells given its input bits, into the protocol. As
+> with `bulk-learn`, abstracting the process improved performance by
+> allowing internal use of transients.
 
 {% highlight clojure %}
 (defprotocol PSynapseGraph
@@ -147,19 +173,17 @@ explicitly or implicitly, can be made separately.
   (in-synapses [this target-id]
     "All synapses to the target. A map from source ids to permanences.")
   (sources-connected-to [this target-id]
-    "The set of source ids actually connected to target id.")
+    "The collection of source ids actually connected to target id.")
   (targets-connected-from [this source-id]
-    "The set of target ids actually connected from source id.")
-  (reinforce-in-synapses [this target-id skip? reinforce? pinc pdec]
-    "Updates the permanence of all synapses to `target-id`. Both
-    `skip?` and `reinforce?` are functions of the source id; if the
-    former returns true the synapse is unchanged; otherwise the latter
-    gives the direction of change.")
-  (conj-synapses [this target-id syn-source-ids p]
-    "Conjoins new synapses into the graph, from a collection
-    `syn-source-ids` to `target-id`, with initial permanence `p`.")
-  (disj-synapses [this target-id syn-source-ids]
-    "Disjoins the synapses from `syn-source-ids` to `target-id`."))
+    "The collection of target ids actually connected from source id.")
+  (excitations [this active-sources stimulus-threshold]
+    "Computes a map of target ids to their degree of excitation -- the
+    number of sources in `active-sources` they are connected to -- excluding
+    any below `stimulus-threshold`.")
+  (bulk-learn [this seg-updates active-sources pinc pdec pinit]
+    "Applies learning updates to a batch of targets. `seg-updates` is
+    a sequence of SegUpdate records, one for each target dendrite
+    segment."))
 {% endhighlight %}
 
 A question arises of how to look up the target dendrite segments by
@@ -172,9 +196,6 @@ distal synapse graphs:
   (cell-segments [this cell-id]
     "A vector of segments on the cell, each being a synapse map."))
 {% endhighlight %}
-
-These 6+1 functions have been sufficient to get the HTM algorithms
-running. How to get them to run _fast_ is another question.
 
 
 ## Alternative backends
