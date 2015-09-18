@@ -263,6 +263,31 @@ Looking forward to hearing your thoughts directly or on the
 
 *--Felix*
 
+> **UPDATE 2015-09-18:** Chetan,
+> [replying on NuPIC-theory](http://lists.numenta.org/pipermail/nupic-theory_lists.numenta.org/2015-September/003188.html),
+> suggested running a higher-order sequence like
+>
+>     6874230
+>     1874235
+>
+> This is "higher-order" because it's not enough to learn the
+> transitions in isolation. The context of the first letter must be
+> carried through the following 5 steps in order to unambiguously
+> predict the final letter.
+>
+> I ran it through my _second-level motor_ demo, where each word is
+> repeated until it is learned before moving on, and the sequence
+> learning is reset when starting each new word. Learning follows a
+> pattern where on each repetition the new pattern becomes
+> progressively more distinct from the old pattern, until after about
+> 6 repetitions there is a fully distinct representation of the new
+> pattern.
+>
+> You can
+> [run this yourself online](http://nupic-community.github.io/comportexviz/),
+> but I also [recorded it as a video](https://youtu.be/CQG6zfMR2Us),
+> in case that is easier.
+
 
 ## Code
 
