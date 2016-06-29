@@ -1,0 +1,218 @@
+---
+layout: post
+title: "Attempting the Numenta Anomaly Benchmark"
+description: ""
+tags: []
+---
+{% include JB/setup %}
+
+The most frustrating thing about working on
+[Hierarchical Temporal Memory](http://numenta.org/) has been the lack
+of any standard test problems. I've spent ages thinking and reading
+papers, trying to decide what kind of problems are suitable. Visual
+object recognition -- or does that depend on understanding attention?
+Game playing -- or does that require complex behaviour generation?
+Natural language processing -- or does that need working memory? What
+even should an HTM system be trying to do and how can we measure it?
+
+To its credit, Numenta has recently established one such standardised
+test problem: [Numenta Anomaly Benchmark](http://numenta.org/nab/)
+(NAB). The task is anomaly detection in a stream of numeric values. It
+includes a combination of artificial data, events with known causes,
+and other real world data annotated with anomalies, each in a window
+of time. Currently there are 58 time series with a total of about
+366,000 records and 116 anomaly windows.
+
+Initial results have an HTM model coming out on top compared with
+several other methods. This is exciting because it is the first
+example I have seen of HTM doing something useful, and doing it better
+than the alternatives.
+
+The HTM model listed on the
+[NAB leaderboard](https://github.com/numenta/NAB) was run in
+[NuPIC](https://github.com/numenta/nupic) with
+[these parameter values](https://github.com/numenta/nupic/blob/039c9292f806a4db5d72e291dc7ed56b1a390a2c/src/nupic/frameworks/opf/common_models/anomaly_params_random_encoder/best_single_metric_anomaly_params_tm_cpp.json).
+I wanted to find out which aspects of the model were really important,
+by exploring the parameter space and algorithm variations. Also, since
+at last we have a standard test problem, this was an opportunity to
+verify my implementation of HTM,
+[Comportex](https://github.com/htm-community/comportex/).
+
+## Headline result
+
+I have not produced a better score than the original Numenta
+model. Rather, my main result was to show that that score can be
+approximately equalled with a much simpler model. That tells us
+something useful about the contribution of different aspects of the
+HTM models. I'll discuss some below.
+
+The headline result comes from Comportex with mostly the same
+parameters as the Numenta model, but with the following differences:
+
+* first-order transition memory (1 cell per column, down from 32);
+* a potential receptive field diameter of 20% (down from 100%);
+* only 16 segments per cell (down from 128);
+* sampled linear encoders;
+* timestamp given as distal input (not feedforward proximal input);
+* a distal stimulus threshold of 18 (not 20).
+
+If you've been following the HTM community you'll recognise that this
+approach is based directly on
+[the successful work of Marcus Lewis](http://mrcslws.com/gorilla/?path=hotgym.clj).
+
+Additionally, some post-processing was applied:
+
+* Instead of the raw bursting rate, a **delta anomaly** score was
+  calculated: it considers only new active columns (ignoring any
+  remaining active from the previous timestep). The bursting rate is
+  calculated only within these new columns. To handle small changes,
+  the number of columns considered -- i.e. divided by -- is kept from
+  falling below 20% of the total number of active columns (20% of 40 =
+  8).
+* If an anomaly is detected (above some specified threshold), **no
+  further detections** are reported for 40 time steps. This stops false
+  positives from going crazy.
+* Note that Numenta's Anomaly Likelihood filtering was **not applied**.
+
+Anyway, here is the final result as scored by NAB:
+
+| model                                         | standard | low FP rate | low FN rate |
+|--------------------------------------------------------------------------------------|
+| _original NuPIC model + anomaly likelihood_   | 65.3     | 58.6        | 69.4        |
+| _original NuPIC model, raw bursting score_    | 52.5     | 41.1        | 58.3        |
+| selected Comportex model, delta anomaly score | 63.7     | 55.4        | 68.6        |
+| selected Comportex model, raw bursting score  | 58.4     | 52.6        | 62.8        |
+
+A model variant that achieves the top _low FP rate_ score of 58.6 is
+also described below under **Effective time steps**.
+
+### Discussion
+
+#### First-order
+
+The result shows that the reported performance of HTM on NAB can be
+explained with only first-order transition memory. That is surprising,
+given that NAB consists of many complex time series, and some were
+even deliberately constructed as artificial higher-order sequence
+problems. However, the result follows similar findings for prediction
+[on the HotGym data](http://mrcslws.com/gorilla/?path=hotgym.clj) (by
+Marcus Lewis), and
+[on the New York Taxi data](http://lists.numenta.org/pipermail/nupic-theory_lists.numenta.org/2015-December/003441.html)
+(by me).
+
+That a first-order model gives an improved result suggests that the
+current design of HTM transition memory is flawed. While it is
+possible that my own implementation has subtle problems, the fact
+remains that HTM's higher order transition memory has not been
+demonstrated to have a benefit on any real dataset. To the best of my
+knowledge.
+
+
+#### Delta anomaly score
+
+viz
+
+
+#### Local receptive field
+
+It is curious that
+greedy sp
+
+
+
+
+#### Sampled linear encoders
+
+The original Numenta model used a Random Distributed Scalar Encoder
+for the time series value, and a periodic scalar encoder for the
+hour. Instead I used Marcus Lewis' sampled linear encoders for both -
+mainly for aesthetic reasons. Also I didn't have an implementation of
+RDSE. So I didn't test the impact of this decision. But just look at
+the encoding they produce - how can this not be good?
+
+
+
+## Effective time steps
+
+The time series data in NAB are sampled at different time scales and
+also change at very different rates. Some are smooth and wavelike and
+others are super spiky. One thing I noticed was that sometimes an
+unexpected peak would look sharp in the context of thousands of other
+data points but it would in fact roll in over many time steps. Because
+there is only an incremental change on each time step, the magnitude
+of the anomaly can be underestimated.
+
+The sampling rate at which data happens to be available may not be the
+best rate for learning meaningful transitions.
+
+
+| model                                         | standard | low FP rate | low FN rate |
+|--------------------------------------------------------------------------------------|
+| _original NuPIC model + anomaly likelihood_   | 65.3     | 58.6        | 69.4        |
+| _original NuPIC model_                        | 52.5     | 41.1        | 58.3        |
+| _selected Comportex model_                    | 63.7     | 55.4        | 68.6        |
+| effective time steps when 20% columns change  | 62.2     | 58.6        | 67.4        |
+
+
+## Breakdown by file
+
+
+which nab-sums -- by file -- change their order / correlation in each experiment
+
+examples
+taxi
+temp1
+cpufe
+
+
+
+## Specific experiments
+
+
+
+_Note:_ The scoring here is not from official NAB, it is from my own
+implementation of the NAB scoring rules. And my scores are not quite
+the same as the official NAB scores, although they are usually closely
+correlated. I have not tracked down the cause of the inconsistency.
+
+
+
+| settings                                      | standard | low FP rate | low FN rate |
+|--------------------------------------------------------------------------------------|
+| baseline (= headline but distal stimulus 20)  | =0.0     | =0.0        | =0.0        |
+| without delta anomaly; raw bursting score     | -4.8     | -2.7        | -3.4        |
+| global receptive field                        | -1.1     | -1.2        | -1.6        |
+| no timestamp input                            | -3.8     | -3.5        | -3.0        |
+| depth 32 cells per column                     | -2.6     | -4.6        | -2.3        |
+| depth 32 cells per column, newly bursting     | -3.2     | -5.9        | -2.3        |
+| depth 32 cells per column, raw bursting       | -5.5     | -5.8        | -5.7        |
+| distal stimulus threshold 19                  | +0.3     | +1.0        | +0.8        |
+| distal stimulus threshold 18 (**headline**)   | +1.1     | +1.5        | +1.9        |
+| distal stimulus threshold 17                  | -0.1     | +0.9        | +2.0        |
+| effective time steps when 20% columns change  | -0.8     | +0.5        | -1.3        |
+| effective time steps when 25% columns change  | -1.9     | +0.1        | -2.4        |
+| effective time steps when 15% columns change  | -1.3     | -0.7        | -1.5        |
+| effective time steps, distal stimulus 18      | -0.7     | +1.1        | -0.9        |
+| depth 32, effective time steps & stimulus 18  | -2.6     | -1.0        | -2.1        |
+
+| settings                                      | standard | low FP rate | low FN rate |
+|--------------------------------------------------------------------------------------|
+| baseline (= headline but distal stimulus 20)  | 66.1     | 60.5        | 70.5        |
+
+| settings                                      | standard | low FP rate | low FN rate |
+|--------------------------------------------------------------------------------------|
+| baseline (= headline but distal stimulus 20)  | 66.1     | 60.5        | 70.5        |
+| without delta anomaly; raw bursting score     | 61.3     | 57.8        | 67.1        |
+| global receptive field                        | 65.0     | 59.3        | 68.9        |
+| no timestamp input                            | 62.3     | 57.0        | 67.5        |
+| depth 32 cells per column                     | 63.5     | 55.9        | 68.2        |
+| depth 32 cells per column, newly bursting     | 62.9     | 54.6        | 68.2        |
+| depth 32 cells per column, raw bursting       | 60.6     | 54.7        | 64.8        |
+| distal stimulus threshold 19                  | 66.4     | 61.5        | 71.3        |
+| distal stimulus threshold 18 (**headline**)   | 67.2     | 62.0        | 72.4        |
+| distal stimulus threshold 17                  | 66.0     | 61.4        | 72.5        |
+| effective time steps when 20% columns change  | 65.3     | 61.0        | 69.2        |
+| effective time steps when 25% columns change  | 64.2     | 60.6        | 68.1        |
+| effective time steps when 15% columns change  | 64.8     | 59.8        | 69.0        |
+| effective time steps, distal stimulus 18 (-2) | 65.4     | 61.6        | 69.6        |
+| depth 32, effective time steps & stimulus 18  | 63.5     | 59.5        | 68.4
