@@ -40,17 +40,17 @@ verify my implementation of HTM,
 
 ## Headline result
 
-I have not produced a better score than the original Numenta
+I have not produced a much better score than the original Numenta
 model. Rather, my main result was to show that that score can be
-approximately equalled with a much simpler model. That tells us
-something useful about the contribution of different aspects of the
-HTM models. I'll discuss some below.
+equalled with a much simpler model. That tells us something useful
+about the contribution of different aspects of the HTM models. I'll
+discuss some below.
 
 The headline result comes from Comportex with mostly the same
 parameters as the Numenta model, but with the following differences:
 
 * first-order transition memory (1 cell per column, down from 32);
-* a potential receptive field diameter of 20% (down from 100%);
+* a potential receptive field sample of 16% (down from 80%);
 * only 16 segments per cell (down from 128);
 * sampled linear encoders;
 * timestamp given as distal input (not feedforward proximal input);
@@ -80,11 +80,12 @@ Anyway, here is the final result as scored by NAB:
 |--------------------------------------------------------------------------------------|
 | _original NuPIC model + anomaly likelihood_   | 65.3     | 58.6        | 69.4        |
 | _original NuPIC model, raw bursting score_    | 52.5     | 41.1        | 58.3        |
-| selected Comportex model, delta anomaly score | 63.7     | 55.4        | 68.6        |
-| selected Comportex model, raw bursting score  | 58.4     | 52.6        | 62.8        |
+| selected Comportex model, delta anomaly score | 64.6     | 58.8        | 69.6        |
+| selected Comportex model, raw bursting score  | 59.5     | 53.4        | 63.8        |
 
-A model variant that achieves the top _low FP rate_ score of 58.6 is
-also described below under **Effective time steps**.
+A model variant that achieves a notably better _low FP rate_ score of
+59.8 is also described below under **Effective time steps**.
+
 
 ### Discussion
 
@@ -100,12 +101,16 @@ Marcus Lewis), and
 [on the New York Taxi data](http://lists.numenta.org/pipermail/nupic-theory_lists.numenta.org/2015-December/003441.html)
 (by me).
 
+Of course I did run experiments with 32 cells per column, the NuPIC
+standard. The result was a large decrease in score -- around the same
+amount as when leaving out the timestamp input, or when leaving out
+the delta anomaly score. (see Appendix)
+
 That a first-order model gives an improved result suggests that the
 current design of HTM transition memory is flawed. While it is
 possible that my own implementation has subtle problems, the fact
 remains that HTM's higher order transition memory has not been
-demonstrated to have a benefit on any real dataset. To the best of my
-knowledge.
+demonstrated to have a benefit on any real problem. As far as I know.
 
 
 #### Delta anomaly score
@@ -113,12 +118,19 @@ knowledge.
 viz
 
 
-#### Local receptive field
+#### Limited potential receptive field
 
-It is curious that
-greedy sp
+It is curious that there is such a strong benefit in limiting the set
+of inputs that each column can connect to. I think this reflects that
+the learning process is HTM is too greedy. Its "boosting" mechanism is
+supposed to correct for this, but in practice does more harm than
+good. There is more to say on this but I'll leave that for another
+time.
 
-
+Compared to the roughly 5% increase in score going from 80% to 16%
+connectivity, we get about two thirds of that benefit if the 16%
+connectivity is restricted to a local 20% area of the input (80%
+connectivity within 20% area = 16%).
 
 
 #### Sampled linear encoders
@@ -128,7 +140,7 @@ for the time series value, and a periodic scalar encoder for the
 hour. Instead I used Marcus Lewis' sampled linear encoders for both -
 mainly for aesthetic reasons. Also I didn't have an implementation of
 RDSE. So I didn't test the impact of this decision. But just look at
-the encoding they produce - how can this not be good?
+the beautiful encoding they produce - how can this not be good?
 
 
 
@@ -151,7 +163,7 @@ best rate for learning meaningful transitions.
 | _original NuPIC model + anomaly likelihood_   | 65.3     | 58.6        | 69.4        |
 | _original NuPIC model_                        | 52.5     | 41.1        | 58.3        |
 | _selected Comportex model_                    | 63.7     | 55.4        | 68.6        |
-| effective time steps when 20% columns change  | 62.2     | 58.6        | 67.4        |
+| effective time steps when 20% columns change  | 64.7     | 59.8        | 69.5        |
 
 
 ## Breakdown by file
@@ -166,9 +178,14 @@ cpufe
 
 
 
-## Specific experiments
+## Appendix: Specific experiments
 
+Results here are expressed as a change in score relative to a starting
+point "baseline" model. The baseline model is the same as headline
+model except:
 
+* distal stimulus threshold 20
+* local receptive field 20% diameter and 80% fraction.
 
 _Note:_ The scoring here is not from official NAB, it is from my own
 implementation of the NAB scoring rules. And my scores are not quite
@@ -177,42 +194,52 @@ correlated. I have not tracked down the cause of the inconsistency.
 
 
 
-| settings                                      | standard | low FP rate | low FN rate |
-|--------------------------------------------------------------------------------------|
-| baseline (= headline but distal stimulus 20)  | =0.0     | =0.0        | =0.0        |
-| without delta anomaly; raw bursting score     | -4.8     | -2.7        | -3.4        |
-| global receptive field                        | -1.1     | -1.2        | -1.6        |
-| no timestamp input                            | -3.8     | -3.5        | -3.0        |
-| depth 32 cells per column                     | -2.6     | -4.6        | -2.3        |
-| depth 32 cells per column, newly bursting     | -3.2     | -5.9        | -2.3        |
-| depth 32 cells per column, raw bursting       | -5.5     | -5.8        | -5.7        |
-| distal stimulus threshold 19                  | +0.3     | +1.0        | +0.8        |
-| distal stimulus threshold 18 (**headline**)   | +1.1     | +1.5        | +1.9        |
-| distal stimulus threshold 17                  | -0.1     | +0.9        | +2.0        |
-| effective time steps when 20% columns change  | -0.8     | +0.5        | -1.3        |
-| effective time steps when 25% columns change  | -1.9     | +0.1        | -2.4        |
-| effective time steps when 15% columns change  | -1.3     | -0.7        | -1.5        |
-| effective time steps, distal stimulus 18      | -0.7     | +1.1        | -0.9        |
-| depth 32, effective time steps & stimulus 18  | -2.6     | -1.0        | -2.1        |
+|   | settings                                      | standard | low FP rate | low FN rate |
+|------------------------------------------------------------------------------------------|
+| * | baseline                                      | =0.0     | =0.0        | =0.0        |
+|   | without delta anomaly; raw bursting score     | -4.8     | -2.7        | -3.4        |
+|   | global receptive field, 80% fraction          | -1.1     | -1.2        | -1.6        |
+|   | global receptive field, 16% fraction          | +0.4     | +1.7        | +0.5        |
+|   | no timestamp input                            | -3.8     | -3.5        | -3.0        |
+|   | depth 32 cells per column                     | -2.6     | -4.6        | -2.3        |
+|   | depth 32 cells per column, newly bursting     | -3.2     | -5.9        | -2.3        |
+|   | depth 32 cells per column, raw bursting       | -5.5     | -5.8        | -5.7        |
+|   | distal stimulus threshold 19                  | +0.3     | +1.0        | +0.8        |
+|   | distal stimulus threshold 18                  | +1.1     | +1.5        | +1.9        |
+|   | distal stimulus threshold 17                  | -0.1     | +0.9        | +2.0        |
+| $ | global receptive field, 16% fraction, stim 18 | +1.3     | +2.5        | +1.4        |
+|   | effective time steps when 20% columns change  | -0.8     | +0.5        | -1.3        |
+|   | effective time steps when 25% columns change  | -1.9     | +0.1        | -2.4        |
+|   | effective time steps when 15% columns change  | -1.3     | -0.7        | -1.5        |
+|   | effective time steps, distal stimulus 18      | -0.7     | +1.1        | -0.9        |
+| ! | effective time steps, 16% fraction, stim 18   | +1.8     | +3.1        | +2.0        |
+|   | depth 32, effective time steps & stimulus 18  | -2.6     | -1.0        | -2.1        |
+
+* _* = baseline model: same as headline but distal stimulus 20, local receptive field._
+* _$ = headline model_
+* _! = headline effective time steps model_
 
 | settings                                      | standard | low FP rate | low FN rate |
 |--------------------------------------------------------------------------------------|
-| baseline (= headline but distal stimulus 20)  | 66.1     | 60.5        | 70.5        |
+| baseline                                      | 66.1     | 60.5        | 70.5        |
 
-| settings                                      | standard | low FP rate | low FN rate |
-|--------------------------------------------------------------------------------------|
-| baseline (= headline but distal stimulus 20)  | 66.1     | 60.5        | 70.5        |
-| without delta anomaly; raw bursting score     | 61.3     | 57.8        | 67.1        |
-| global receptive field                        | 65.0     | 59.3        | 68.9        |
-| no timestamp input                            | 62.3     | 57.0        | 67.5        |
-| depth 32 cells per column                     | 63.5     | 55.9        | 68.2        |
-| depth 32 cells per column, newly bursting     | 62.9     | 54.6        | 68.2        |
-| depth 32 cells per column, raw bursting       | 60.6     | 54.7        | 64.8        |
-| distal stimulus threshold 19                  | 66.4     | 61.5        | 71.3        |
-| distal stimulus threshold 18 (**headline**)   | 67.2     | 62.0        | 72.4        |
-| distal stimulus threshold 17                  | 66.0     | 61.4        | 72.5        |
-| effective time steps when 20% columns change  | 65.3     | 61.0        | 69.2        |
-| effective time steps when 25% columns change  | 64.2     | 60.6        | 68.1        |
-| effective time steps when 15% columns change  | 64.8     | 59.8        | 69.0        |
-| effective time steps, distal stimulus 18 (-2) | 65.4     | 61.6        | 69.6        |
-| depth 32, effective time steps & stimulus 18  | 63.5     | 59.5        | 68.4
+|   | settings                                      | standard | low FP rate | low FN rate |
+|------------------------------------------------------------------------------------------|
+| * | baseline                                      | 66.1     | 60.5        | 70.5        |
+|   | without delta anomaly; raw bursting score     | 61.3     | 57.8        | 67.1        |
+|   | global receptive field, 80% fraction          | 65.0     | 59.3        | 68.9        |
+|   | global receptive field, 16% fraction          | 66.5     | 62.2        | 71.0        |
+|   | no timestamp input                            | 62.3     | 57.0        | 67.5        |
+|   | depth 32 cells per column                     | 63.5     | 55.9        | 68.2        |
+|   | depth 32 cells per column, newly bursting     | 62.9     | 54.6        | 68.2        |
+|   | depth 32 cells per column, raw bursting       | 60.6     | 54.7        | 64.8        |
+|   | distal stimulus threshold 19                  | 66.4     | 61.5        | 71.3        |
+|   | distal stimulus threshold 18                  | 67.2     | 62.0        | 72.4        |
+|   | distal stimulus threshold 17                  | 66.0     | 61.4        | 72.5        |
+| $ | global receptive field, 16% fraction, stim 18 | 67.4     | 63.0        | 71.9        |
+|   | effective time steps when 20% columns change  | 65.3     | 61.0        | 69.2        |
+|   | effective time steps when 25% columns change  | 64.2     | 60.6        | 68.1        |
+|   | effective time steps when 15% columns change  | 64.8     | 59.8        | 69.0        |
+|   | effective time steps, distal stimulus 18      | 65.4     | 61.6        | 69.6        |
+| ! | effective time steps, 16% fraction, stim 18   | 67.9     | 63.6        | 72.5        |
+|   | depth 32, effective time steps & stimulus 18  | 63.5     | 59.5        | 68.4        |
