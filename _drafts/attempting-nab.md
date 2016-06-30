@@ -2,9 +2,17 @@
 layout: post
 title: "Attempting the Numenta Anomaly Benchmark"
 description: ""
-tags: []
+tags: [comportex anomalies]
 ---
 {% include JB/setup %}
+
+_In which it turns out the current best result on NAB can be achieved
+with only first-order transition memory. I think this is because the
+regular sampling rate of most time series data does not give very
+meaningful sequences of transitions. When we take effective time steps
+only when sufficient changes occur this indeed gives some improved
+performance. Ultimately I think anomaly detection will require robust
+temporal pooling._
 
 The most frustrating thing about working on
 [Hierarchical Temporal Memory](http://numenta.org/) has been the lack
@@ -18,8 +26,8 @@ even should an HTM system be trying to do and how can we measure it?
 To its credit, Numenta has recently established one such standardised
 test problem: [Numenta Anomaly Benchmark](http://numenta.org/nab/)
 (NAB). The task is anomaly detection in a stream of numeric values. It
-includes a combination of artificial data, events with known causes,
-and other real world data annotated with anomalies, each in a window
+includes a corpus of artificial data, events with known causes,
+and other real world data annotated with anomalies, each over a window
 of time. Currently there are 58 time series with a total of about
 366,000 records and 116 anomaly windows.
 
@@ -32,7 +40,7 @@ The HTM model listed on the
 [NAB leaderboard](https://github.com/numenta/NAB) was run in
 [NuPIC](https://github.com/numenta/nupic) with
 [these parameter values](https://github.com/numenta/nupic/blob/039c9292f806a4db5d72e291dc7ed56b1a390a2c/src/nupic/frameworks/opf/common_models/anomaly_params_random_encoder/best_single_metric_anomaly_params_tm_cpp.json).
-I wanted to find out which aspects of the model were really important,
+I set out to find out which aspects of the model were really important,
 by exploring the parameter space and algorithm variations. Also, since
 at last we have a standard test problem, this was an opportunity to
 verify my implementation of HTM,
@@ -46,7 +54,7 @@ equalled with a much simpler model. That tells us something useful
 about the contribution of different aspects of the HTM models. I'll
 discuss some below.
 
-The headline result comes from Comportex with mostly the same
+The headline result here comes from Comportex with mostly the same
 parameters as the Numenta model, but with the following differences:
 
 * first-order transition memory (1 cell per column, down from 32);
@@ -83,11 +91,17 @@ Anyway, here is the final result as scored by NAB:
 | selected Comportex model, delta anomaly score | 64.6     | 58.8        | 69.6        |
 | selected Comportex model, raw bursting score  | 59.5     | 53.4        | 63.8        |
 
-A model variant that achieves a notably better _low FP rate_ score of
+A model variant that achieves a notably better **low FP rate** score of
 59.8 is also described below under **Effective time steps**.
 
 
 ### Discussion
+
+This is a good result and confirms that Comportex is a competitive
+implementation of HTM. But the most interesting part is how this
+allows us to run a bunch of experiments to tease apart the
+contribution of different aspects of the models. Let look at the most
+important ones:
 
 #### First-order
 
@@ -122,15 +136,16 @@ viz
 
 It is curious that there is such a strong benefit in limiting the set
 of inputs that each column can connect to. I think this reflects that
-the learning process is HTM is too greedy. Its "boosting" mechanism is
-supposed to correct for this, but in practice does more harm than
-good. There is more to say on this but I'll leave that for another
-time.
+the learning process in HTM is too greedy, so it loses the ability to
+discriminate between values. A "boosting" mechanism is supposed to
+correct for this, but in practice does more harm than good. There is
+more to say on this but I'll leave that for another time.
 
 Compared to the roughly 5% increase in score going from 80% to 16%
 connectivity, we get about two thirds of that benefit if the 16%
-connectivity is restricted to a local 20% area of the input (80%
-connectivity within 20% area = 16%).
+connectivity is restricted to a local area of the input bits (80%
+connectivity within 20% area = 16%). Probably in the local case,
+greediness applies again within a local range of values.
 
 
 #### Sampled linear encoders
@@ -142,7 +157,15 @@ mainly for aesthetic reasons. Also I didn't have an implementation of
 RDSE. So I didn't test the impact of this decision. But just look at
 the beautiful encoding they produce - how can this not be good?
 
+![](/assets/2016-06-30/value-encoder.png)
 
+*Value encoder. x-axis is numeric range in 5% steps. Active bits vertically.*
+
+![](/assets/2016-06-30/hour-encoder.png)
+
+*Hour-of-day encoder. x-axis is hour. Active bits vertically.*
+
+-
 
 ## Effective time steps
 
@@ -162,11 +185,13 @@ best rate for learning meaningful transitions.
 |--------------------------------------------------------------------------------------|
 | _original NuPIC model + anomaly likelihood_   | 65.3     | 58.6        | 69.4        |
 | _original NuPIC model_                        | 52.5     | 41.1        | 58.3        |
-| _selected Comportex model_                    | 63.7     | 55.4        | 68.6        |
+| _selected Comportex model (above)_            | 64.6     | 58.8        | 69.6        |
 | effective time steps when 20% columns change  | 64.7     | 59.8        | 69.5        |
 
 
-## Breakdown by file
+## Next steps
+
+Breakdown effects by file
 
 
 which nab-sums -- by file -- change their order / correlation in each experiment
@@ -215,9 +240,11 @@ correlated. I have not tracked down the cause of the inconsistency.
 | ! | effective time steps, 16% fraction, stim 18   | +1.8     | +3.1        | +2.0        |
 |   | depth 32, effective time steps & stimulus 18  | -2.6     | -1.0        | -2.1        |
 
-* _* = baseline model: same as headline but distal stimulus 20, local receptive field._
-* _$ = headline model_
-* _! = headline effective time steps model_
+> _*  baseline model: same as headline but distal stimulus 20, local receptive field._
+>
+> _$  headline model_
+>
+> _!  headline effective time steps model_
 
 | settings                                      | standard | low FP rate | low FN rate |
 |--------------------------------------------------------------------------------------|
