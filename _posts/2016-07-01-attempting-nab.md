@@ -223,13 +223,14 @@ profile:
 Incidentally, I think the **low FP rate** profile is the most
 reasonable. It balances one correctly detected anomaly to about 10
 false positives; whereas the *standard* profile balances one to about
-20 false positives, which seems excessive.
+20 false positives, which seems excessive. And **low FN rate** is more
+like one to 30.
 
 #### Limitations
 
 Anyway, this effective time steps approach is interesting but
-obviously not a final solution. It has not way to detect when an
-expected event does _not_ occur; since there is no change of value
+obviously not a final solution. It has no way to detect when an
+expected event does _not_ occur, since there is no change of value
 involved.
 
 Ideally I think the system would be entrained to a rhythm according to
@@ -242,8 +243,19 @@ variations by file. Which files change their score order under in each
 experiment? That could help to investigate what's going wrong, in detail.
 
 
+Looking forward to hearing your thoughts directly or on the
+[NuPIC-theory mailing list](http://numenta.org/lists/).
 
+*--Felix*
 
+-
+
+## Code
+
+The results here were produced with
+[nab-comportex](https://github.com/floybix/nab-comportex/) 0.1.0 using [Comportex](https://github.com/htm-community/comportex/) 0.0.14.
+
+-
 
 ## Appendix: Specific experiments
 
