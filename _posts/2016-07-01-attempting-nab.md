@@ -271,6 +271,9 @@ implementation of the NAB scoring rules. And my scores are not quite
 the same as the official NAB scores, although they are usually closely
 correlated. I have not tracked down the cause of the inconsistency.
 
+Scores shown as differences from a baseline model. That is the same as
+the headline model but with distal stimulus threshold 20, and a local
+20% receptive field.
 
 <pre>
 |   | settings                                      | standard | low FP rate | low FN rate |
@@ -295,31 +298,17 @@ correlated. I have not tracked down the cause of the inconsistency.
 |   | depth 32, effective time steps & stimulus 18  | -2.6     | -1.0        | -2.1        |
 </pre>
 
-> _*  baseline model: same as headline but distal stimulus 20, local receptive field._
+> _*  baseline model_
 >
 > _$  headline model_
 >
 > _!  headline effective time steps model_
 
+
+Where baseline model scores are (different from official NAB scoring):
+
 <pre>
 |   | settings                                      | standard | low FP rate | low FN rate |
 |------------------------------------------------------------------------------------------|
 | * | baseline                                      | 66.1     | 60.5        | 70.5        |
-|   | without delta anomaly; raw bursting score     | 61.3     | 57.8        | 67.1        |
-|   | global receptive field, 80% fraction          | 65.0     | 59.3        | 68.9        |
-|   | global receptive field, 16% fraction          | 66.5     | 62.2        | 71.0        |
-|   | no timestamp input                            | 62.3     | 57.0        | 67.5        |
-|   | depth 32 cells per column                     | 63.5     | 55.9        | 68.2        |
-|   | depth 32 cells per column, newly bursting     | 62.9     | 54.6        | 68.2        |
-|   | depth 32 cells per column, raw bursting       | 60.6     | 54.7        | 64.8        |
-|   | distal stimulus threshold 19                  | 66.4     | 61.5        | 71.3        |
-|   | distal stimulus threshold 18                  | 67.2     | 62.0        | 72.4        |
-|   | distal stimulus threshold 17                  | 66.0     | 61.4        | 72.5        |
-| $ | global receptive field, 16% fraction, stim 18 | 67.4     | 63.0        | 71.9        |
-|   | effective time steps when 20% columns change  | 65.3     | 61.0        | 69.2        |
-|   | effective time steps when 25% columns change  | 64.2     | 60.6        | 68.1        |
-|   | effective time steps when 15% columns change  | 64.8     | 59.8        | 69.0        |
-|   | effective time steps, distal stimulus 18      | 65.4     | 61.6        | 69.6        |
-| ! | effective time steps, 16% fraction, stim 18   | 67.9     | 63.6        | 72.5        |
-|   | depth 32, effective time steps & stimulus 18  | 63.5     | 59.5        | 68.4        |
 </pre>
