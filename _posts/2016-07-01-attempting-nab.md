@@ -138,8 +138,8 @@ time step 4000:
 ![](/assets/2016-07-01/temp1-anomaly-delta-scores.png)
 
 *Section of the `machine_temperature_system_failure` data. Anomaly
- windows are outlined in red. The middle plot is raw bursting scores
- and the bottom plot is delta anomaly scores, from a baseline HTM
+ windows are outlined in red. The middle plot is delta anomaly scores
+ and the bottom plot is raw bursting scores, from a baseline HTM
  model.*
 
 Looking at the HTM columns with Sanity, we can see that the anomaly
