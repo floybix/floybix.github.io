@@ -120,16 +120,29 @@ amount as when leaving out the timestamp input, or when leaving out
 the delta anomaly score. (see Appendix)
 
 That a first-order model gives an improved result suggests that the
-current design of HTM transition memory is flawed. While it is
+current design of HTM transition memory is incomplete. While it is
 possible that my own implementation has subtle problems, the fact
 remains that HTM's higher order transition memory has not been
-demonstrated to have a benefit on any real problem. As far as I know.
+demonstrated to have a benefit on any real problem, as far as I know.
 
 My feeling is that transition memory will work better when constrained
 by higher-level contexts, i.e. with temporal pooling.
 
 
 #### Delta anomaly score
+
+The delta anomaly score is defined as:
+
+<pre>
+(number-of-newly-active-columns-that-are-bursting) /
+max(0.2 * number-of-active-columns, number-of-newly-active-columns)
+</pre>
+
+Note that this will not pick up cases when columns stay on
+unexpectedly, like a flat-line scenario. To catch this I also tried a
+variant with instead the `number-of-newly-bursting-columns` --
+i.e. counting the columns that changed into a bursting state, even if
+they were previously active. However, that gave worse results.
 
 Here's an example of an obvious anomaly in the
 `realKnownCause/machine_temperature_system_failure` series, around
