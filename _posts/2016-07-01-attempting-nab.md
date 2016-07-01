@@ -8,7 +8,7 @@ tags: [comportex anomalies]
 
 _In which it turns out the current best result on NAB can be achieved
 with only first-order transition memory. I guess the regular sampling
-rate of most time series data does not itself consistute a very
+rate of most time series data does not itself constistute a very
 meaningful sequence of transitions. If we take effective time steps
 only when sufficient changes occur this indeed gives some improved
 performance. Ultimately, like most things in HTM, I think anomaly
@@ -155,9 +155,10 @@ time step 4000:
  and the bottom plot is raw bursting scores, from a baseline HTM
  model.*
 
-Looking at the HTM columns with Sanity, we can see that the anomaly
-rolls in over several time steps, hiding the overall magnitude of the
-anomaly:
+Looking at the HTM columns with
+[Sanity](https://github.com/htm-community/sanity), we can see that the
+anomaly rolls in over several time steps, hiding the overall magnitude
+of the anomaly:
 
 ![](/assets/2016-07-01/temp1-t3982.png)
 
