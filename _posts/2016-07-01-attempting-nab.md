@@ -222,7 +222,7 @@ profile:
 
 Incidentally, I think the **low FP rate** profile is the most
 reasonable. It balances one correctly detected anomaly to about 10
-false positives; whereas the *standard* profile balances one to about
+false positives; whereas the **standard** profile balances one to about
 20 false positives, which seems excessive. And **low FN rate** is more
 like one to 30.
 
@@ -271,9 +271,7 @@ implementation of the NAB scoring rules. And my scores are not quite
 the same as the official NAB scores, although they are usually closely
 correlated. I have not tracked down the cause of the inconsistency.
 
-Scores shown as differences from a baseline model. That is the same as
-the headline model but with distal stimulus threshold 20, and a local
-20% receptive field.
+Scores shown as differences from baseline:
 
 <pre>
 |   | settings                                      | standard | low FP rate | low FN rate |
@@ -298,11 +296,11 @@ the headline model but with distal stimulus threshold 20, and a local
 |   | depth 32, effective time steps & stimulus 18  | -2.6     | -1.0        | -2.1        |
 </pre>
 
-> _*  baseline model_
->
-> _$  headline model_
->
-> _!  headline effective time steps model_
+_*  baseline model_
+
+_$  headline model_
+
+_!  headline effective time steps model_
 
 
 Where baseline model scores are (different from official NAB scoring):
