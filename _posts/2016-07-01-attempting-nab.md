@@ -244,7 +244,7 @@ experiment? That could help to investigate what's going wrong, in detail.
 
 
 Looking forward to hearing your thoughts directly or on the
-[NuPIC-theory mailing list](http://numenta.org/lists/).
+[HTM Forum](http://discourse.numenta.org/).
 
 *--Felix*
 
