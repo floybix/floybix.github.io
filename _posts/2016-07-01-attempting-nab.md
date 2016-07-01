@@ -125,6 +125,9 @@ possible that my own implementation has subtle problems, the fact
 remains that HTM's higher order transition memory has not been
 demonstrated to have a benefit on any real problem. As far as I know.
 
+My feeling is that transition memory will work better when constrained
+by higher-level contexts, i.e. with temporal pooling.
+
 
 #### Delta anomaly score
 
