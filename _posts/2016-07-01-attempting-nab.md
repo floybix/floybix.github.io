@@ -6,13 +6,16 @@ tags: [comportex anomalies]
 ---
 {% include JB/setup %}
 
-_In which it turns out the current best result on NAB can be achieved
-with only first-order transition memory. I guess the regular sampling
-rate of most time series data does not itself constistute a very
-meaningful sequence of transitions. If we take effective time steps
-only when sufficient changes occur this indeed gives some improved
-performance. Ultimately, like most things in HTM, I think anomaly
-detection will require robust temporal pooling._
+_Being an objective test problem, NAB allows us to tease apart the
+contribution of various aspects of HTM models. It turns out the
+current best result on NAB can be achieved with only first-order
+transition memory. It seems the regular sampling rate of most time
+series data does not produce a directly meaningful sequence of
+transitions. If we take effective time steps only when sufficient
+changes occur this indeed gives some improved performance, but still
+sees no benefit to higher-order transitions. Ultimately, like most
+things in HTM, I think human-level anomaly detection will require
+robust temporal pooling._
 
 The most frustrating thing about working on
 [Hierarchical Temporal Memory](http://numenta.org/) has been the lack
@@ -124,7 +127,6 @@ current design of HTM transition memory is incomplete. While it is
 possible that my own implementation has subtle problems, the fact
 remains that HTM's higher order transition memory has not been
 demonstrated to have a benefit on any real problem, as far as I know.
-
 My feeling is that transition memory will work better when constrained
 by higher-level contexts, i.e. with temporal pooling.
 
