@@ -196,7 +196,7 @@ td, th { white-space: nowrap; }
 
 
 {% raw %}
-<script src="http://variancecharts.com/cdn/variance-noncommercial-standalone-02c9f8b.min.js"
+<script src="http://variancecharts.com/cdn/variance-noncommercial-standalone-6d26aa2.min.js"
         charset="UTF-8"></script>
 <csv id="tp-baseline-data">
 pattern,candidate,in-steps,out-steps,active-in,active-out,sensitivity,specificity,precision
@@ -628,7 +628,7 @@ from each integer are ORed together. The code is
 > input stream:
 > [mixed_fixed_1d_10k.csv](/assets/2014-09-26/mixed_fixed_1d_10k.csv)
 > (70kb).
-> 
+>
 > The file has 6 columns containing either integers or blanks. The set
 > of integers from each row should be encoded with a scalar encoder of
 > range [0 15], bit width 400, and 25 active bits. The final input set

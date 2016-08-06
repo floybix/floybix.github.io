@@ -106,7 +106,7 @@ makes sense to look at those with imperfect sensitivity, `twos` and
 inactive.
 
 {% raw %}
-<script src="http://variancecharts.com/cdn/variance-noncommercial-standalone-02c9f8b.min.js"
+<script src="http://variancecharts.com/cdn/variance-noncommercial-standalone-6d26aa2.min.js"
         charset="UTF-8"></script>
 <style>
 #runs-plot {
@@ -289,4 +289,3 @@ The demo here was compiled from
 
 The extra analysis code is here:
 [temporal_pooling_experiments.clj](/assets/2014-09-26/temporal_pooling_experiments.clj).
-
